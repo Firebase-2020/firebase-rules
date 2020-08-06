@@ -13,8 +13,14 @@
   margin-right: 20px;
 }
 
-/* .password {
-  position: absolute;
-  top: 50px;
-  left: 75px;
-} */
+.actions {
+  margin-top: 20px;
+}
+
+.login-button {
+  margin-bottom: 20px;
+}
+
+.submit_button {
+  margin-right: 100px;
+}
