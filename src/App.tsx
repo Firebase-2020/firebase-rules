@@ -25,72 +25,64 @@ const App: React.SFC<AppProps> = () => {
     setPassword((event.target as HTMLInputElement).value)
   }
 
-  const handleSubmit = (event: React.SyntheticEvent<EventTarget>) => {
-    event.preventDefault();
-    // Check if form is valid
-    if (true) {
-      // Reset errors and set loading to true
-      if (login) {
-        firebase
-          .auth()
-          .signInWithEmailAndPassword(email, password)
-          .then(singedInUser => {
-            console.log("singedInUser", singedInUser);
-            // set loading to false
-          })
-          .catch(err => {
-            console.error(err);
-            // set errors
-            // set loading to false
-          });
-      } else {
-        // Reset errors and set loading to true
-        firebase
-          .auth()
-          .createUserWithEmailAndPassword(email, password)
-          .then((createdUser: any) => {
-            if (createdUser !== null) {
-              createdUser.user
-                .updateProfile({
-                  displayName: name,
-
-                })
-                .then(() => {
-                  // console.log("createdUser", { createdUser });
-                  saveUser(createdUser).then(() => {
-                    console.log("User saved!");
-                  })
-                  // set loading to false
-                })
-                .catch((err: any) => {
-                  console.error("err", err);
-                  // set errors
-                  // set loading to false
-                });
-            }
-          })
-          .catch(err => {
-            console.error(err);
-            if (err.code === "auth/email-already-in-use") {
-              console.log('User alrady in use');
-
-            }
-
-            // set errors
-            // set loading to false
-          });
-      }
-
-
-    }
-  };
-
   const saveUser = (createdUser: any) => {
     return firebase.database().ref("users").child(createdUser.user.uid).set({
       name: createdUser.user.displayName,
       email: createdUser.user.email
     });
   };
+
+  const handleSubmit = async (event: React.SyntheticEvent<EventTarget>) => {
+    event.preventDefault();
+    // Check if form is valid
+    if (true) {
+      // Reset errors and set loading to true
+      if (login) {
+        try {
+          const singedInUser: any = await firebase
+            .auth()
+            .signInWithEmailAndPassword(email, password)
+          console.log("singedInUser", singedInUser);
+          // set loading to false
+        } catch (err) {
+          console.error(err);
+          // set errors
+          // set loading to false
+        }
+      } else {
+        try {
+          // Reset errors and set loading to true
+          const createdUser: any = await firebase
+            .auth()
+            .createUserWithEmailAndPassword(email, password)
+          //  .then((createdUser: any) => {
+          if (createdUser !== null) {
+            console.log('createdUser', createdUser);
+
+            try {
+              await createdUser.user
+                .updateProfile({
+                  displayName: name
+                })
+              await saveUser(createdUser);
+              console.log("User saved!");
+              // set loading to false
+            } catch (err) {
+              console.error("err", err);
+              // set errors
+              // set loading to false
+            }
+          }
+        } catch (err) {
+          console.error(err);
+          if (err.code === "auth/email-already-in-use") {
+            console.log('User already in use');
+          }
+        }
+      }
+    };
+  }
+
 
   return (
     <div className='containter' >
