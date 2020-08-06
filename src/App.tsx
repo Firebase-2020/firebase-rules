@@ -12,6 +12,7 @@ const App: React.SFC<AppProps> = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [login, setLogin] = useState<boolean>(false);
+  const [admin, setAdmin] = useState<boolean>(false);
 
   const handleName = (event: React.SyntheticEvent<EventTarget>) => {
     setName((event.target as HTMLInputElement).value)
@@ -86,13 +87,21 @@ const App: React.SFC<AppProps> = () => {
 
   return (
     <div className='containter' >
-      <h2>{login ? 'Login' : 'Sign up'} </h2>
+      <h2>{login ? 'Login' : 'Sign up'} as {admin ? 'user' : 'admin'}</h2>
       <button
         type="button"
         className="login-button"
         onClick={() => setLogin(prev => !prev)}
+        style={{ marginRight: 10 }}
       >
         {login ? "need to create an account?" : "already have an account"}
+      </button>
+      <button
+        type="button"
+        className="admin-button"
+        onClick={() => setAdmin(prev => !prev)}
+      >
+        {admin ? "change to admin" : "change to user"}
       </button>
       <form onSubmit={handleSubmit}>
         {!login && (
