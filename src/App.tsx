@@ -29,7 +29,8 @@ const App: React.SFC<AppProps> = () => {
   const saveUser = (createdUser: any) => {
     return firebase.database().ref("users").child(createdUser.user.uid).set({
       name: createdUser.user.displayName,
-      email: createdUser.user.email
+      email: createdUser.user.email,
+      role: admin ? 'admin' : 'user'
     });
   };
 
@@ -43,7 +44,6 @@ const App: React.SFC<AppProps> = () => {
           const singedInUser: any = await firebase
             .auth()
             .signInWithEmailAndPassword(email, password)
-          console.log("singedInUser", singedInUser);
           // set loading to false
         } catch (err) {
           console.error(err);
@@ -87,7 +87,7 @@ const App: React.SFC<AppProps> = () => {
 
   return (
     <div className='containter' >
-      <h2>{login ? 'Login' : 'Sign up'} as {admin ? 'user' : 'admin'}</h2>
+      <h2>{login ? 'Login' : 'Sign up'} as {admin ? 'admin' : 'user'}</h2>
       <button
         type="button"
         className="login-button"
@@ -101,7 +101,7 @@ const App: React.SFC<AppProps> = () => {
         className="admin-button"
         onClick={() => setAdmin(prev => !prev)}
       >
-        {admin ? "change to admin" : "change to user"}
+        {admin ? "change to user" : "change to admin"}
       </button>
       <form onSubmit={handleSubmit}>
         {!login && (
