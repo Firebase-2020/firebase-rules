@@ -11,24 +11,31 @@ export interface IndexProps {
 }
 
 const Index: React.SFC<IndexProps> = () => {
-  const [user, setUser] = useState({});
+  const [userEmail, setUserEmail] = useState<string>('');
+  const [userId, setUserId] = useState<string>('');
+  const [userName, setUserName] = useState<string>('');
 
 
   useEffect(() => {
     const unsubscribe = firebase.auth().onAuthStateChanged(user => {
       if (!!user) {
-        setUser(user)
-        // console.log('user', user);
+        console.log(user);
+        
+        const email: any = user.email
+        const userId: any = user.uid
+        const userName: any = user.displayName
+        setUserEmail(email)
+        setUserId(userId)
+        setUserName(userName)
       } else {
         console.log('error user is not logged in');
-        setUser({})
       }
     });
     return () => unsubscribe();
   })
-
   return (
-      <App user={user} />
+
+    <App userName={userName}  userEmail={userEmail} userId={userId} />
   );
 }
 

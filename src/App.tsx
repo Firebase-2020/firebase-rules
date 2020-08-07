@@ -3,13 +3,16 @@ import firebase from './firebase';
 import './App.css';
 
 export interface AppProps {
-  user: {}
+  userName: any,
+  userEmail: any,
+  userId: any
 }
 
-const App: React.SFC<AppProps> = ({ user }) => {
+const App: React.SFC<AppProps> = ({ userName, userEmail, userId }) => {
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [userRole, setUserRole] = useState<string>('');
   const [login, setLogin] = useState<boolean>(false);
   const [admin, setAdmin] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -90,29 +93,46 @@ const App: React.SFC<AppProps> = ({ user }) => {
       }
     };
   }
+  const getUserRole = useCallback(() => {
+    return users.length > 0 && users.map((user: any) => {
+      // console.log('getUserRole', user);
+      for (const key in user) {
+        console.log('user[key]', user[key].id);
+        console.log('userId', userId);
+        if (userId === user[key].id) {
+          console.log(user[key].role);
+          setUserRole(user[key].role)
+          return user[key].role
+        }
+      }
+      return true;
+    })
+
+  }, [setUserRole, users, userId])
+
+  useEffect(() => {
+    getUserRole()
+  }, [getUserRole])
 
   const getUsers: () => void = useCallback(() => {
     const loadedUsers: any[] = []
-    if (!!user) {
-      console.log('getUsers', user);
-
-    }
-
     usersRef.on('value', (snap: any) => {
       loadedUsers.push(snap.val())
       setUsers(loadedUsers)
       console.log('loadedUsers', loadedUsers);
     })
-  }, [setUsers, usersRef, user])
+  }, [setUsers, usersRef])
 
   useEffect(() => {
     getUsers();
     return () => usersRef.off();
-  }, [usersRef, getUsers])
+  }, [usersRef, getUsers,])
 
   const editUser = (userId: string) => {
     usersRef.child(userId).update({ name: 'fo' })
   }
+
+
 
   const displayUsers = (users: any) => {
     return users.length > 0 && users.map((userObj: any) => {
@@ -120,6 +140,7 @@ const App: React.SFC<AppProps> = ({ user }) => {
       for (const key in userObj) {
         users.push(userObj[key])
       }
+
       return users.map((user: any) =>
         <li key={user.id} style={{ margin: 20 }}>
           {user.email}
@@ -132,12 +153,25 @@ const App: React.SFC<AppProps> = ({ user }) => {
     )
   }
 
-
-
   return (
     <div className='containter' >
+      <h4> Current User:   </h4>
+      {{ userEmail } && (
+        <ul>
+          <li>
+            Name: {userName},
+          </li>
+          <li>
+            Email:  {userEmail},
+          </li>
+          <li>
+            Role: {userRole}
+          </li>
+        </ul>
+      )}
+      
       <h2>{login ? 'Login' : 'Sign up'} as {admin ? 'admin' : 'user'}</h2>
-      {/* {!!user && <h4>User: {user.email}</h4>} */}
+
       <button
         type="button"
         className="login-button"
