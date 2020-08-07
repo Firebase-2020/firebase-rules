@@ -51,7 +51,8 @@ const App: React.SFC<AppProps> = ({ userName, userEmail, userId }) => {
             .signInWithEmailAndPassword(email, password)
           // set loading to false
           setIsSubmitting(false)
-
+          setEmail('')
+          setPassword('')
         } catch (err) {
           console.error(err);
           // set errors
@@ -75,7 +76,6 @@ const App: React.SFC<AppProps> = ({ userName, userEmail, userId }) => {
               console.log("User saved!");
               // set loading to false
               setIsSubmitting(false)
-
             } catch (err) {
               console.error("err", err);
               // set errors
@@ -95,10 +95,7 @@ const App: React.SFC<AppProps> = ({ userName, userEmail, userId }) => {
   }
   const getUserRole = useCallback(() => {
     return users.length > 0 && users.map((user: any) => {
-      // console.log('getUserRole', user);
       for (const key in user) {
-        console.log('user[key]', user[key].id);
-        console.log('userId', userId);
         if (userId === user[key].id) {
           console.log(user[key].role);
           setUserRole(user[key].role)
@@ -107,7 +104,6 @@ const App: React.SFC<AppProps> = ({ userName, userEmail, userId }) => {
       }
       return true;
     })
-
   }, [setUserRole, users, userId])
 
   useEffect(() => {
@@ -155,21 +151,23 @@ const App: React.SFC<AppProps> = ({ userName, userEmail, userId }) => {
 
   return (
     <div className='containter' >
-      <h4> Current User:   </h4>
-      {{ userEmail } && (
-        <ul>
-          <li>
-            Name: {userName},
+      {!!userEmail && (
+        <div>
+          <h4> Current User:   </h4>
+          <ul>
+            <li>
+              Name: {userName},
           </li>
-          <li>
-            Email:  {userEmail},
+            <li>
+              Email:  {userEmail},
           </li>
-          <li>
-            Role: {userRole}
-          </li>
-        </ul>
+            <li>
+              Role: {userRole}
+            </li>
+          </ul>
+        </div>
       )}
-      
+
       <h2>{login ? 'Login' : 'Sign up'} as {admin ? 'admin' : 'user'}</h2>
 
       <button
@@ -184,9 +182,17 @@ const App: React.SFC<AppProps> = ({ userName, userEmail, userId }) => {
         type="button"
         className="admin-button"
         onClick={() => setAdmin(prev => !prev)}
+        style={{ marginRight: 10 }}
       >
         {admin ? "change to user" : "change to admin"}
       </button>
+      {userEmail && <button
+        type="button"
+        className="logout-button"
+        onClick={async () => await firebase.auth().signOut()}
+      >
+        Logout
+      </button>}
       {/* The FORM */}
       <form onSubmit={handleSubmit}>
         {!login && (
