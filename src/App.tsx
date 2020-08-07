@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import firebase from './firebase';
-
 import './App.css';
 
 export interface AppProps {
+  user: {}
 }
 
-const App: React.SFC<AppProps> = () => {
+const App: React.SFC<AppProps> = ({ user }) => {
   const [name, setName] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -20,7 +20,6 @@ const App: React.SFC<AppProps> = () => {
     setName((event.target as HTMLInputElement).value)
   }
   const handleEmail = (event: React.SyntheticEvent<EventTarget>) => {
-    // console.log((event.target as HTMLInputElement).value);
     setEmail((event.target as HTMLInputElement).value)
   }
   const handlePassword = (event: React.SyntheticEvent<EventTarget>) => {
@@ -94,37 +93,51 @@ const App: React.SFC<AppProps> = () => {
 
   const getUsers: () => void = useCallback(() => {
     const loadedUsers: any[] = []
+    if (!!user) {
+      console.log('getUsers', user);
+
+    }
+
     usersRef.on('value', (snap: any) => {
       loadedUsers.push(snap.val())
       setUsers(loadedUsers)
       console.log('loadedUsers', loadedUsers);
     })
-  }, [setUsers, usersRef])
+  }, [setUsers, usersRef, user])
 
   useEffect(() => {
     getUsers();
     return () => usersRef.off();
   }, [usersRef, getUsers])
 
+  const editUser = (userId: string) => {
+    usersRef.child(userId).update({ name: 'fo' })
+  }
+
   const displayUsers = (users: any) => {
-    console.log(users);
     return users.length > 0 && users.map((userObj: any) => {
       const users = []
       for (const key in userObj) {
         users.push(userObj[key])
       }
       return users.map((user: any) =>
-        <li key={user.id}>
+        <li key={user.id} style={{ margin: 20 }}>
           {user.email}
+          <button onClick={() => editUser(user.id)} style={{ marginLeft: 10 }}>
+            edit
+          </button>
         </li>
       )
     }
     )
   }
 
+
+
   return (
     <div className='containter' >
       <h2>{login ? 'Login' : 'Sign up'} as {admin ? 'admin' : 'user'}</h2>
+      {/* {!!user && <h4>User: {user.email}</h4>} */}
       <button
         type="button"
         className="login-button"
