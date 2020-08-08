@@ -3,7 +3,7 @@ ul {
 }
 .containter {
   position: absolute;
-  top: 100px;
+  top: 20px;
   left: 300px;
 }
 .email {
@@ -27,3 +27,4 @@ ul {
 .submit_button {
   margin-right: 100px;
 }
+

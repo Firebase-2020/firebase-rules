@@ -77,6 +77,7 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
   const editUser = async (userId: string) => {
     try {
       if (changeName.length > 0) {
+        window.location.reload(false);
         await usersRef.child(userId).update({ name: changeName });
         // admin cannot change the name in other user's firebase-profile.
         // Just only in users database, in Realtime Database.
@@ -87,12 +88,9 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
             displayName: changeName
           })
         }
-        setChangeName('')
-        window.location.reload(false);
       } else {
         alert('Please write a name with at least 1 character.')
       }
-     
     } catch (err) {
       console.error(err);
       alert("PERMISSION_DENIED - You are not allowed to edit other user's profile.")
@@ -190,6 +188,17 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
 
   }
 
+  const showInfo = () => {
+    alert(`
+* Admin can change every user's name, but only in 'users' database,
+in Realtime Database.
+* Admin can change only their own name in Firebase-profile.
+* Users may change only their own name, both in their Firebase-profile,
+as in Realtime Database.
+* Permission is denied for normal users to change other user's name.
+`)
+  }
+
 
   return (
     <div className='containter' >
@@ -273,7 +282,10 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
           </ul>
         </div>
       )}
-      <h4> Users:   </h4>
+      <div style={{display: 'flex', flexDirection: 'row', alignItems:'center'}}>
+        <h4> Users:   </h4>
+        <button onClick={showInfo} style={{height: 20, margin: 10}} >info</button>
+      </div>
       <input
         value={changeName}
         onChange={handleChangeName}
