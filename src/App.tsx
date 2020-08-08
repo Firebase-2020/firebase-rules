@@ -10,8 +10,6 @@ export interface AppProps {
 }
 
 const App: React.SFC<AppProps> = ({ userName, userEmail, userId }) => {
-
-
   return (
     <Service userName={userName} userEmail={userEmail} userId={userId} />
   )

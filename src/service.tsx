@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+
 import firebase from './firebase';
 import './App.css';
 
@@ -16,6 +17,7 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
   const [userRole, setUserRole] = useState<string>('');
   const [login, setLogin] = useState<boolean>(false);
   const [admin, setAdmin] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [users, setUsers] = useState<any[]>([]);
   const [usersRef] = useState<any>(firebase.database().ref().child('users'));
@@ -75,6 +77,7 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
   }, [usersRef, getUsers,])
 
   const editUser = async (userId: string) => {
+    setLoading(true)
     try {
       if (changeName.length > 0) {
         window.location.reload(false);
@@ -88,10 +91,13 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
             displayName: changeName
           })
         }
+        setLoading(false)
       } else {
+        setLoading(false)
         alert('Please write a name with at least 1 character.')
       }
     } catch (err) {
+      setLoading(false)
       console.error(err);
       alert("PERMISSION_DENIED - You are not allowed to edit other user's profile.")
     }
@@ -103,6 +109,7 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
       for (const key in userObj) {
         usersArray.push(userObj[key])
       }
+
       return usersArray.map((user: any) =>
         <tr key={user.id} style={{ margin: 20 }}>
           <td style={{ margin: 20 }} >{user.name}
@@ -121,12 +128,13 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
     // Check if form is valid
     if (true) {
       // Reset errors and set loading to true
+      setLoading(true)
       if (login) {
         try {
           await firebase
             .auth()
             .signInWithEmailAndPassword(email, password)
-          // set loading to false
+          setLoading(false)
           setIsSubmitting(false)
           setEmail('')
           setPassword('')
@@ -135,6 +143,7 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
           getUserRole();
           setEmail('');
           setPassword('');
+
         } catch (err) {
           console.error(err);
           // set errors
@@ -144,6 +153,8 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
       } else {
         try {
           // Reset errors and set loading to true
+          setLoading(true)
+
           const createdUser: any = await firebase
             .auth()
             .createUserWithEmailAndPassword(email, password)
@@ -159,14 +170,15 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
               getUsers()
               displayUsers(users);
               getUserRole()
-              // set loading to false
+              setLoading(false)
+
               setIsSubmitting(false)
               setEmail('');
               setPassword('');
             } catch (err) {
               console.error("err", err);
               // set errors
-              // set loading to false
+              setLoading(false)
               setIsSubmitting(false)
             }
           }
@@ -199,28 +211,74 @@ as in Realtime Database.
 `)
   }
 
+  if (loading) {
+    return (
+      <div className='container' >
+        <h1 >Loading...</h1>
+      </div>
+    )
+  }
 
   return (
-    <div className='containter' >
-
+    <div className='container' >
       {/* Action buttons */}
-      <h2>{login ? 'Login' : 'Sign up'} as {admin ? 'admin' : 'user'}</h2>
-      <button
-        type="button"
-        className="login-button"
-        onClick={() => setLogin(prev => !prev)}
-        style={{ marginRight: 10 }}
-      >
-        {login ? "need to create an account?" : "already have an account"}
-      </button>
-      <button
-        type="button"
-        className="admin-button"
-        onClick={() => setAdmin(prev => !prev)}
-        style={{ marginRight: 10 }}
-      >
-        {admin ? "change to user" : "change to admin"}
-      </button>
+      {!userEmail && <div>
+        {!login ? <h2>Sign up as {admin ? 'admin' : 'user'}</h2> :
+          <h2>Login</h2>}
+        <button
+          type="button"
+          className="login-button"
+          onClick={() => setLogin(prev => !prev)}
+          style={{ marginRight: 10 }}
+        >
+          {login ? "need to create an account?" : "already have an account"}
+        </button>
+        {!login && <button
+          type="button"
+          className="admin-button"
+          onClick={() => setAdmin(prev => !prev)}
+          style={{ marginRight: 10 }}
+        >
+          {admin ? "change to user" : "change to admin"}
+        </button>}
+        {/* The FORM */}
+        <form onSubmit={handleSubmit}>
+          {!login && (
+            <input
+              value={name}
+              onChange={handleName}
+              type="text"
+              placeholder="Your name"
+              autoComplete="off"
+              style={{ marginRight: 10 }}
+            />
+          )}
+          <input
+            onChange={handleEmail}
+            type="email" value={email}
+            placeholder='Your email'
+            className='email' id='email'
+            autoComplete="off"
+            style={{ marginRight: 10 }} />
+          <input
+            onChange={handlePassword}
+            type="password"
+            value={password}
+            placeholder='Your password'
+            className='password'
+            autoComplete="off" />
+          <div className="actions">
+            <button
+              type="submit"
+              className="submit_button"
+              disabled={isSubmitting}
+              style={{ background: isSubmitting ? "grey" : "orange" }}
+            >
+              Submit
+          </button>
+          </div>
+        </form>
+      </div>}
       {users.length > 0 && <button
         type="button"
         className="logout-button"
@@ -228,43 +286,7 @@ as in Realtime Database.
       >
         Logout
       </button>}
-      {/* The FORM */}
-      <form onSubmit={handleSubmit}>
-        {!login && (
-          <input
-            value={name}
-            onChange={handleName}
-            type="text"
-            placeholder="Your name"
-            autoComplete="off"
-            style={{ marginRight: 10 }}
-          />
-        )}
-        <input
-          onChange={handleEmail}
-          type="email" value={email}
-          placeholder='Your email'
-          className='email' id='email'
-          autoComplete="off"
-          style={{ marginRight: 10 }} />
-        <input
-          onChange={handlePassword}
-          type="password"
-          value={password}
-          placeholder='Your password'
-          className='password'
-          autoComplete="off" />
-        <div className="actions">
-          <button
-            type="submit"
-            className="submit_button"
-            disabled={isSubmitting}
-            style={{ background: isSubmitting ? "grey" : "orange" }}
-          >
-            Submit
-          </button>
-        </div>
-      </form>
+
       {/* Curent User info */}
       {users.length > 0 && (
         <div >
@@ -282,18 +304,20 @@ as in Realtime Database.
           </ul>
         </div>
       )}
-      <div style={{display: 'flex', flexDirection: 'row', alignItems:'center'}}>
-        <h4> Users:   </h4>
-        <button onClick={showInfo} style={{height: 20, margin: 10}} >info</button>
-      </div>
-      <input
-        value={changeName}
-        onChange={handleChangeName}
-        type="text"
-        placeholder="Write new name"
-        autoComplete="off"
-        style={{ margin: 10 }}
-      />
+      {users.length > 0 && <div>
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+          <h4> Users:   </h4>
+          <button onClick={showInfo} style={{ height: 20, margin: 10 }} >info</button>
+        </div>
+        <input
+          value={changeName}
+          onChange={handleChangeName}
+          type="text"
+          placeholder="Write new name"
+          autoComplete="off"
+          style={{ margin: 10 }}
+        />
+      </div>}
       {displayUsers(users)}
     </div>);
 }
