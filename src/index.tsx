@@ -19,16 +19,14 @@ const Index: React.SFC<IndexProps> = () => {
   useEffect(() => {
     const unsubscribe = firebase.auth().onAuthStateChanged(user => {
       if (!!user) {
-        console.log(user);
-        
         const email: any = user.email
-        const userId: any = user.uid
-        const userName: any = user.displayName
         setUserEmail(email)
+        const userId: any = user.uid
         setUserId(userId)
+        const userName: any = user.displayName
         setUserName(userName)
       } else {
-        console.log('error user is not logged in');
+        console.log('User is not logged in');
       }
     });
     return () => unsubscribe();

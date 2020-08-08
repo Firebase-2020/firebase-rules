@@ -38,61 +38,6 @@ const App: React.SFC<AppProps> = ({ userName, userEmail, userId }) => {
     });
   };
 
-  const handleSubmit = async (event: React.SyntheticEvent<EventTarget>) => {
-    event.preventDefault();
-    setIsSubmitting(true)
-    // Check if form is valid
-    if (true) {
-      // Reset errors and set loading to true
-      if (login) {
-        try {
-          await firebase
-            .auth()
-            .signInWithEmailAndPassword(email, password)
-          // set loading to false
-          setIsSubmitting(false)
-          setEmail('')
-          setPassword('')
-        } catch (err) {
-          console.error(err);
-          // set errors
-          // set loading to false
-          setIsSubmitting(false)
-        }
-      } else {
-        try {
-          // Reset errors and set loading to true
-          const createdUser: any = await firebase
-            .auth()
-            .createUserWithEmailAndPassword(email, password)
-          if (createdUser !== null) {
-            console.log('createdUser', createdUser);
-            try {
-              await createdUser.user
-                .updateProfile({
-                  displayName: name
-                })
-              await saveUser(createdUser);
-              console.log("User saved!");
-              // set loading to false
-              setIsSubmitting(false)
-            } catch (err) {
-              console.error("err", err);
-              // set errors
-              // set loading to false
-              setIsSubmitting(false)
-            }
-          }
-        } catch (err) {
-          console.error(err);
-          if (err.code === "auth/email-already-in-use") {
-            console.log('Email already in use');
-          }
-          setIsSubmitting(false)
-        }
-      }
-    };
-  }
   const getUserRole = useCallback(() => {
     return users.length > 0 && users.map((user: any) => {
       for (const key in user) {
@@ -136,7 +81,6 @@ const App: React.SFC<AppProps> = ({ userName, userEmail, userId }) => {
       for (const key in userObj) {
         users.push(userObj[key])
       }
-
       return users.map((user: any) =>
         <li key={user.id} style={{ margin: 20 }}>
           {user.email}
@@ -149,9 +93,80 @@ const App: React.SFC<AppProps> = ({ userName, userEmail, userId }) => {
     )
   }
 
+  const handleSubmit = async (event: React.SyntheticEvent<EventTarget>) => {
+    event.preventDefault();
+    setIsSubmitting(true)
+    // Check if form is valid
+    if (true) {
+      // Reset errors and set loading to true
+      if (login) {
+        try {
+          await firebase
+            .auth()
+            .signInWithEmailAndPassword(email, password)
+          // set loading to false
+          setIsSubmitting(false)
+          setEmail('')
+          setPassword('')
+          getUsers()
+          displayUsers(users);
+          getUserRole()
+        } catch (err) {
+          console.error(err);
+          // set errors
+          // set loading to false
+          setIsSubmitting(false)
+        }
+      } else {
+        try {
+          // Reset errors and set loading to true
+          const createdUser: any = await firebase
+            .auth()
+            .createUserWithEmailAndPassword(email, password)
+          if (createdUser !== null) {
+            console.log('createdUser', createdUser);
+            try {
+              await createdUser.user
+                .updateProfile({
+                  displayName: name
+                })
+              await saveUser(createdUser);
+              console.log("User saved!");
+              getUsers()
+              displayUsers(users);
+              getUserRole()
+              // set loading to false
+              setIsSubmitting(false)
+            } catch (err) {
+              console.error("err", err);
+              // set errors
+              // set loading to false
+              setIsSubmitting(false)
+            }
+          }
+        } catch (err) {
+          console.error(err);
+          if (err.code === "auth/email-already-in-use") {
+            console.log('Email already in use');
+          }
+          setIsSubmitting(false)
+        }
+      }
+    };
+  }
+
+
+  const logout = async () => {
+    await firebase.auth().signOut();
+    setUsers([])
+
+  }
+
+
   return (
     <div className='containter' >
-      {!!userEmail && (
+      {/* Curent User info */}
+      {users.length > 0 && (
         <div>
           <h4> Current User:   </h4>
           <ul>
@@ -167,9 +182,8 @@ const App: React.SFC<AppProps> = ({ userName, userEmail, userId }) => {
           </ul>
         </div>
       )}
-
+      {/* Action buttons */}
       <h2>{login ? 'Login' : 'Sign up'} as {admin ? 'admin' : 'user'}</h2>
-
       <button
         type="button"
         className="login-button"
@@ -186,10 +200,10 @@ const App: React.SFC<AppProps> = ({ userName, userEmail, userId }) => {
       >
         {admin ? "change to user" : "change to admin"}
       </button>
-      {userEmail && <button
+      {users.length > 0 && <button
         type="button"
         className="logout-button"
-        onClick={async () => await firebase.auth().signOut()}
+        onClick={logout}
       >
         Logout
       </button>}
