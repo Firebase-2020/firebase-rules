@@ -2,10 +2,11 @@
   "rules": {
     "users": {
         ".read": "auth.uid !== null",
-        ".write": "'dGUa4dqn5bVL6CWWYNmZFiQz6xp2' === auth.uid",
+        ".write": "'Re7ZWE9F2AgUZGy0uvbtqo47DkH3' === auth.uid",
       "$uid": {
         ".write": "$uid === auth.uid"
       }
     }
   }
 }
+

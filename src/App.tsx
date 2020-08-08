@@ -71,7 +71,7 @@ const App: React.SFC<AppProps> = ({ userName, userEmail, userId }) => {
 
   const editUser = async (userId: string) => {
     try {
-      await usersRef.child(userId).update({ name: 'foo' })
+      await usersRef.child(userId).update({ name: 'asda' })
       alert('Please refresh to see changes.')
     } catch (err) {
       console.error(err);
