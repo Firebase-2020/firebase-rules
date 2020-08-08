@@ -31,7 +31,6 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
   }
 
   const handleChangeName = (event: React.SyntheticEvent<EventTarget>) => {
-
     setChangeName((event.target as HTMLInputElement).value)
   }
 
@@ -77,12 +76,23 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
 
   const editUser = async (userId: string) => {
     try {
-      await usersRef.child(userId).update({ name: changeName });
-      const user: any = await firebase.auth().currentUser;
-      user.updateProfile({
-        displayName: changeName
-      })
-      alert('Please refresh to see changes.')
+      if (changeName.length > 0) {
+        await usersRef.child(userId).update({ name: changeName });
+        // admin cannot change the name in other user's firebase-profile.
+        // Just only in users database, in Realtime Database.
+        if (userRole === 'admin' && userId === '49HG4u2qXmPgluFKyGh9xYzhK2r1' ||
+          userRole === 'user') {
+          const user: any = firebase.auth().currentUser;
+          user.updateProfile({
+            displayName: changeName
+          })
+        }
+        setChangeName('')
+        alert('Please refresh to see changes.')
+      } else {
+        alert('Please write a name with at least 1 character.')
+      }
+     
     } catch (err) {
       console.error(err);
       alert("PERMISSION_DENIED - You are not allowed to edit other user's profile.")
@@ -91,22 +101,20 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
 
   const displayUsers = (users: any) => {
     return users.length > 0 && users.map((userObj: any) => {
-      const users = []
+      const usersArray = []
       for (const key in userObj) {
-        users.push(userObj[key])
+        usersArray.push(userObj[key])
       }
-      return users.map((user: any) =>
+      return usersArray.map((user: any) =>
         <tr key={user.id} style={{ margin: 20 }}>
-          <td style={{margin: 20}} >{user.name}
-        
+          <td style={{ margin: 20 }} >{user.name}
             <button onClick={() => editUser(user.id)} style={{ margin: 10 }}>
-              change name
+              apply here new name
           </button>
           </td>
         </tr>
       )
-    }
-    )
+    })
   }
 
   const handleSubmit = async (event: React.SyntheticEvent<EventTarget>) => {
@@ -252,7 +260,7 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
       {users.length > 0 && (
         <div >
           <h4> Current User:   </h4>
-          <ul style={{margin: 10}}>
+          <ul style={{ margin: 10 }}>
             <li>
               Name: {userName},
           </li>
@@ -265,15 +273,15 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
           </ul>
         </div>
       )}
-       <h4> Users:   </h4>
-       <input
-            value={changeName}
-            onChange={handleChangeName}
-            type="text"
-            placeholder="Write new name"
-            autoComplete="off"
-            style={{ margin: 10 }}
-          />
+      <h4> Users:   </h4>
+      <input
+        value={changeName}
+        onChange={handleChangeName}
+        type="text"
+        placeholder="Write new name"
+        autoComplete="off"
+        style={{ margin: 10 }}
+      />
       {displayUsers(users)}
     </div>);
 }
