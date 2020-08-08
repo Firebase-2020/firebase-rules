@@ -69,8 +69,14 @@ const App: React.SFC<AppProps> = ({ userName, userEmail, userId }) => {
     return () => usersRef.off();
   }, [usersRef, getUsers,])
 
-  const editUser = (userId: string) => {
-    usersRef.child(userId).update({ name: 'fo' })
+  const editUser = async (userId: string) => {
+    try {
+      await usersRef.child(userId).update({ name: 'foo' })
+      alert('Please refresh to see changes.')
+    } catch (err) {
+      console.error(err);
+      alert("PERMISSION_DENIED - You are not allowed to edit other user's profile.")
+    }
   }
 
 
@@ -83,7 +89,7 @@ const App: React.SFC<AppProps> = ({ userName, userEmail, userId }) => {
       }
       return users.map((user: any) =>
         <li key={user.id} style={{ margin: 20 }}>
-          {user.email}
+          {user.name}
           <button onClick={() => editUser(user.id)} style={{ marginLeft: 10 }}>
             edit
           </button>
@@ -108,9 +114,11 @@ const App: React.SFC<AppProps> = ({ userName, userEmail, userId }) => {
           setIsSubmitting(false)
           setEmail('')
           setPassword('')
-          getUsers()
+          getUsers();
           displayUsers(users);
-          getUserRole()
+          getUserRole();
+          setEmail('');
+          setPassword('');
         } catch (err) {
           console.error(err);
           // set errors
@@ -137,6 +145,8 @@ const App: React.SFC<AppProps> = ({ userName, userEmail, userId }) => {
               getUserRole()
               // set loading to false
               setIsSubmitting(false)
+              setEmail('');
+              setPassword('');
             } catch (err) {
               console.error("err", err);
               // set errors
@@ -165,23 +175,7 @@ const App: React.SFC<AppProps> = ({ userName, userEmail, userId }) => {
 
   return (
     <div className='containter' >
-      {/* Curent User info */}
-      {users.length > 0 && (
-        <div>
-          <h4> Current User:   </h4>
-          <ul>
-            <li>
-              Name: {userName},
-          </li>
-            <li>
-              Email:  {userEmail},
-          </li>
-            <li>
-              Role: {userRole}
-            </li>
-          </ul>
-        </div>
-      )}
+
       {/* Action buttons */}
       <h2>{login ? 'Login' : 'Sign up'} as {admin ? 'admin' : 'user'}</h2>
       <button
@@ -244,6 +238,23 @@ const App: React.SFC<AppProps> = ({ userName, userEmail, userId }) => {
           </button>
         </div>
       </form>
+      {/* Curent User info */}
+      {users.length > 0 && (
+        <div>
+          <h4> Current User:   </h4>
+          <ul>
+            <li>
+              Name: {userName},
+          </li>
+            <li>
+              Email:  {userEmail},
+          </li>
+            <li>
+              Role: {userRole}
+            </li>
+          </ul>
+        </div>
+      )}
       <ul>
         {displayUsers(users)}
       </ul>
