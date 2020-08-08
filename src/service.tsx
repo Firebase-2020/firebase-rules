@@ -80,7 +80,7 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
         await usersRef.child(userId).update({ name: changeName });
         // admin cannot change the name in other user's firebase-profile.
         // Just only in users database, in Realtime Database.
-        if (userRole === 'admin' && userId === '49HG4u2qXmPgluFKyGh9xYzhK2r1' ||
+        if ((userRole === 'admin' && userId === '49HG4u2qXmPgluFKyGh9xYzhK2r1') ||
           userRole === 'user') {
           const user: any = firebase.auth().currentUser;
           user.updateProfile({
@@ -88,7 +88,7 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
           })
         }
         setChangeName('')
-        alert('Please refresh to see changes.')
+        window.location.reload(false);
       } else {
         alert('Please write a name with at least 1 character.')
       }
