@@ -19,8 +19,16 @@ References
 Realtime database rules: https://firebase.google.com/docs/database/security
 
 
+* Current story of end-to-end test:
+    - Sign up a new normal user.
+    - There are three users in total (two where already there). User tries to modify the name of all three, but his own changes.
+    - Log out user.
+    - Sign in as admin.
+    - Admin modifies his name.
+    - Admin modifies other user's name.
+
 
 * Hosting URL: https://fir-rules-f324d.web.app
 * For automation we installed also ts-node.
 * To run test type: "npm run auto" (see package.json).
-* Note: To run "npm run build" you need to have this: "export {}" at the very top of automation.tsx, so ts will see it as a module. Nevertheless, when you run "npm run auto" you need to comment it out, otherwise you get an error "Unespected token..."
+* Note: To run "npm run build" you need to have this: "export {}" at the very top of automation.tsx, so ts will see it as a module. Then run firebase deploy, But, when you run "npm run auto" you need to comment it out, otherwise you get an error "Unespected token..."

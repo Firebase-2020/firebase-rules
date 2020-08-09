@@ -3,16 +3,23 @@ const { chromium } = require('playwright');
 
 (async () => {
     const browser = await chromium.launch({
-        headless: false
+        headless: false,
+        devtools: true
     });
     try {
         const page = await browser.newPage();
         await page.goto('https://fir-rules-f324d.web.app');
-        // Fill an input.
         await page.type('#name', 'fotia', {delay: 100});
-        await page.type('#email', 'footia@gmail.com', {delay: 100});
+        await page.type('#email', 'foo@gmail.com', {delay: 100});
         await page.type('#password', 'asdasd', {delay: 100});
-        await page.click('#submit');
+        await page.click('#submit', {delay: 100});
+        await page.type('#changeName', 'foo-0', {delay: 100});
+        await page.click('#button0', {delay: 2000});
+        await page.type('#changeName', 'foo-1', {delay: 100});
+        await page.click('#button1', {delay: 2000});
+        await page.type('#changeName', 'foo-2', {delay: 100});
+        await page.click('#button2', {delay: 2000});
+
 
     } catch(err) {
         console.log(err);

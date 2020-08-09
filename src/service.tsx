@@ -80,7 +80,6 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
     setLoading(true)
     try {
       if (changeName.length > 0) {
-        window.location.reload(false);
         await usersRef.child(userId).update({ name: changeName });
         // admin cannot change the name in other user's firebase-profile.
         // Just only in users database, in Realtime Database.
@@ -92,6 +91,7 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
           })
         }
         setLoading(false)
+        console.log('granted');
       } else {
         setLoading(false)
         alert('Please write a name with at least 1 character.')
@@ -100,7 +100,9 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
       setLoading(false)
       console.error(err);
       alert("PERMISSION_DENIED - You are not allowed to edit other user's profile.")
+      console.log('denied');
     }
+    window.location.reload(false);
   }
 
   const displayUsers = (users: any) => {
@@ -110,10 +112,10 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
         usersArray.push(userObj[key])
       }
 
-      return usersArray.map((user: any) =>
+      return usersArray.map((user: any, i: number) =>
         <tr key={user.id} style={{ margin: 20 }}>
           <td style={{ margin: 20 }} >{user.name}
-            <button onClick={() => editUser(user.id)} style={{ margin: 10 }}>
+            <button id={`button${i}`} onClick={() => editUser(user.id)} style={{ margin: 10 }}>
               apply here new name
           </button>
           </td>
@@ -154,7 +156,6 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
         try {
           // Reset errors and set loading to true
           setLoading(true)
-
           const createdUser: any = await firebase
             .auth()
             .createUserWithEmailAndPassword(email, password)
@@ -219,6 +220,7 @@ as in Realtime Database.
     )
   }
 
+
   return (
     <div className='container' >
       {/* Action buttons */}
@@ -273,7 +275,7 @@ as in Realtime Database.
             autoComplete="off" />
           <div className="actions">
             <button
-            id='submit'
+              id='submit'
               type="submit"
               className="submit_button"
               disabled={isSubmitting}
@@ -315,6 +317,7 @@ as in Realtime Database.
           <button onClick={showInfo} style={{ height: 20, margin: 10 }} >info</button>
         </div>
         <input
+          id='changeName'
           value={changeName}
           onChange={handleChangeName}
           type="text"
