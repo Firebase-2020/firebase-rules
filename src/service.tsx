@@ -245,6 +245,8 @@ as in Realtime Database.
         <form onSubmit={handleSubmit}>
           {!login && (
             <input
+              id='name'
+              className='name'
               value={name}
               onChange={handleName}
               type="text"
@@ -254,13 +256,15 @@ as in Realtime Database.
             />
           )}
           <input
+            id='email'
             onChange={handleEmail}
             type="email" value={email}
             placeholder='Your email'
-            className='email' id='email'
+            className='email'
             autoComplete="off"
             style={{ marginRight: 10 }} />
           <input
+            id='password'
             onChange={handlePassword}
             type="password"
             value={password}
@@ -269,6 +273,7 @@ as in Realtime Database.
             autoComplete="off" />
           <div className="actions">
             <button
+            id='submit'
               type="submit"
               className="submit_button"
               disabled={isSubmitting}

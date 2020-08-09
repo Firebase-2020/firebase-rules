@@ -17,3 +17,10 @@ Full journey:
 
 References
 Realtime database rules: https://firebase.google.com/docs/database/security
+
+
+
+* Hosting URL: https://fir-rules-f324d.web.app
+* For automation we installed also ts-node.
+* To run test type: "npm run auto" (see package.json).
+* Note: To run "npm run build" you need to have this: "export {}" at the very top of automation.tsx, so ts will see it as a module. Nevertheless, when you run "npm run auto" you need to comment it out, otherwise you get an error "Unespected token..."
