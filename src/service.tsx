@@ -215,7 +215,14 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
     firebase.database().ref("users").child(userId).remove();
     console.log('user deleted');
     window.location.reload(false)
-    
+  }
+
+  const changeAdminNameHandler = async () => {
+    await usersRef.child(userId).update({ name: 'Admin' });
+    const user: any = firebase.auth().currentUser;
+    user.updateProfile({
+      displayName: 'Admin'
+    })
   }
 
   const showInfo = () => {
@@ -247,7 +254,7 @@ as in Realtime Database.
         {!login ? <h2>Sign up as {admin ? 'admin' : 'user'}</h2> :
           <h2>Login</h2>}
         <button
-        id='account-button'
+          id='account-button'
           type="button"
           className="login-button"
           onClick={() => setLogin(prev => !prev)}
@@ -256,7 +263,7 @@ as in Realtime Database.
           {login ? "need to create an account?" : "already have an account"}
         </button>
         {!login && <button
-        id='admin-button'
+          id='admin-button'
           type="button"
           className="admin-button"
           onClick={() => setAdmin(prev => !prev)}
@@ -308,7 +315,7 @@ as in Realtime Database.
         </form>
       </div>}
       {users.length > 0 && <button
-      id='logout-button'
+        id='logout-button'
         type="button"
         className="logout-button"
         onClick={logout}
@@ -320,8 +327,18 @@ as in Realtime Database.
         type="button"
         className="delete-user-button"
         onClick={deleteUserHandler}
+        style={{ margin: 10 }}
       >
         delete user
+      </button>}
+      {users.length === 1 && <button
+        id='change-admin-name-button'
+        type="button"
+        className="delete-user-button"
+        onClick={changeAdminNameHandler}
+        style={{ margin: 10 }}
+      >
+        change admin name back to Admin
       </button>}
       {/* Curent User info */}
       {users.length > 0 && (

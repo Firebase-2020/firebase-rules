@@ -34,7 +34,7 @@ const { chromium } = require('playwright');
         await page.waitForTimeout(2500);
         await page.type('#changeName', 'baz-2', {delay: 100});
         await page.click('#button2', {delay: 2000});
-        await page.waitForTimeout(2500);
+        await page.waitForTimeout(3500);
         await page.click('#logout-button', {delay: 100});
 
 
@@ -48,14 +48,16 @@ const { chromium } = require('playwright');
 
          // Change name
         await page.waitForTimeout(2500);
-        await page.type('#changeName', 'foo-0 (again)', {delay: 100});
+        await page.type('#changeName', 'bar-0', {delay: 100});
         await page.click('#button0', {delay: 2000});
         await page.waitForTimeout(2500);
-        await page.type('#changeName', 'foo-1 (again)', {delay: 100});
+        await page.type('#changeName', 'bar-1', {delay: 100});
         await page.click('#button1', {delay: 2000});
         await page.waitForTimeout(2500);
-        await page.type('#changeName', 'foo-2 (again)', {delay: 100});
+        await page.type('#changeName', 'bar-2', {delay: 100});
         await page.click('#button2', {delay: 2000});
+        await page.waitForTimeout(3500);
+        await page.click('#change-admin-name-button', {delay: 2000});
         await page.waitForTimeout(2500);
         await page.click('#logout-button', {delay: 100});
 
