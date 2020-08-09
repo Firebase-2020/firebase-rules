@@ -23,6 +23,8 @@ const { chromium } = require('playwright');
         await page.type('#changeName', 'foo-2', {delay: 100});
         await page.click('#button2', {delay: 2000});
         await page.waitForTimeout(1500);
+        await page.click('#delete-user');
+        await page.click('#delete-user');
 
 
     } catch(err) {

@@ -121,7 +121,7 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
             <button id={`button${i}`} onClick={() => editUser(user.id)} style={{ margin: 10 }}>
               apply here new name
           </button>
-          {user.id === userId && 'current User'}
+            {user.id === userId && 'current User'}
           </td>
         </tr>
       )
@@ -180,6 +180,7 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
               setIsSubmitting(false)
               setEmail('');
               setPassword('');
+              window.location.reload(false)
             } catch (err) {
               console.error("err", err);
               alert(err.message)
@@ -205,7 +206,15 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
   const logout = async () => {
     await firebase.auth().signOut();
     setUsers([])
+  }
 
+  const deleteUserHandler = () => {
+    const user: any = firebase.auth().currentUser;
+    user.delete();
+    firebase.database().ref("users").child(userId).remove();
+    console.log('user deleted');
+    window.location.reload(false)
+    
   }
 
   const showInfo = () => {
@@ -226,6 +235,8 @@ as in Realtime Database.
       </div>
     )
   }
+
+
 
 
   return (
@@ -294,11 +305,20 @@ as in Realtime Database.
         </form>
       </div>}
       {users.length > 0 && <button
+      id='logout-user'
         type="button"
         className="logout-button"
         onClick={logout}
       >
         Logout
+      </button>}
+      {users.length > 0 && <button
+        id='delete-user'
+        type="button"
+        className="delete-user-button"
+        onClick={deleteUserHandler}
+      >
+        delete user
       </button>}
 
       {/* Curent User info */}

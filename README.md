@@ -21,8 +21,8 @@ Realtime database rules: https://firebase.google.com/docs/database/security
 
 * Current story of end-to-end test:
     - Sign up a new normal user.
-    - There are three users in total (two where already there). User tries to modify the name of all three, but his own changes.
-    - Log out user.
+    - There are three users in total (two where already there). User tries to modify the name of all three, but only his own changes. Users sees every time a message, either PERMISSION_GRANTED or PERMISSION_DENIED.
+    - User then gets deleted, because the test works with 3 users. Thus if deleted you can run the test again.
     - Sign in as admin.
     - Admin modifies his name.
     - Admin modifies other user's name.
