@@ -20,12 +20,11 @@ Realtime database rules: https://firebase.google.com/docs/database/security
 
 
 * Current story of end-to-end test:
-    - Sign up a new normal user.
-    - There are three users in total (two where already there). User tries to modify the name of all three, but only his own changes. Users sees every time a message, either PERMISSION_GRANTED or PERMISSION_DENIED.
-    - User then gets deleted, because the test works with 3 users. Thus if deleted you can run the test again.
-    - Sign in as admin.
-    - Admin modifies his name.
-    - Admin modifies other user's name.
+    - Sign up 2 new normal users (the admin is already there).
+    - Last user tries to modify the name of all three, but only his own changes. Users sees every time a message, either PERMISSION_GRANTED or PERMISSION_DENIED.
+    - Then we login as admin.
+    - Admin modifies all three names.
+    - Two normal users get deleted.
 
 
 * Hosting URL: https://fir-rules-f324d.web.app

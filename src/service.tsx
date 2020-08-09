@@ -84,7 +84,8 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
         await usersRef.child(userId).update({ name: changeName });
         // admin cannot change the name in other user's firebase-profile.
         // Just only in users database, in Realtime Database.
-        if ((userRole === 'admin' && userId === '49HG4u2qXmPgluFKyGh9xYzhK2r1') ||
+        // The id is the admin's.
+        if ((userRole === 'admin' && userId === '77BjL7t5IlYiyEECV1cjDG0qEDD2') ||
           userRole === 'user') {
           const user: any = firebase.auth().currentUser;
           user.updateProfile({
@@ -205,7 +206,7 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
 
   const logout = async () => {
     await firebase.auth().signOut();
-    setUsers([])
+    window.location.reload(false)
   }
 
   const deleteUserHandler = () => {
@@ -246,6 +247,7 @@ as in Realtime Database.
         {!login ? <h2>Sign up as {admin ? 'admin' : 'user'}</h2> :
           <h2>Login</h2>}
         <button
+        id='account-button'
           type="button"
           className="login-button"
           onClick={() => setLogin(prev => !prev)}
@@ -254,6 +256,7 @@ as in Realtime Database.
           {login ? "need to create an account?" : "already have an account"}
         </button>
         {!login && <button
+        id='admin-button'
           type="button"
           className="admin-button"
           onClick={() => setAdmin(prev => !prev)}
@@ -305,7 +308,7 @@ as in Realtime Database.
         </form>
       </div>}
       {users.length > 0 && <button
-      id='logout-user'
+      id='logout-button'
         type="button"
         className="logout-button"
         onClick={logout}
@@ -313,14 +316,13 @@ as in Realtime Database.
         Logout
       </button>}
       {users.length > 0 && <button
-        id='delete-user'
+        id='delete-user-button'
         type="button"
         className="delete-user-button"
         onClick={deleteUserHandler}
       >
         delete user
       </button>}
-
       {/* Curent User info */}
       {users.length > 0 && (
         <div >
