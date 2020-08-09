@@ -17,6 +17,7 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
   const [userRole, setUserRole] = useState<string>('');
   const [login, setLogin] = useState<boolean>(false);
   const [admin, setAdmin] = useState<boolean>(false);
+  const [permission, setPermission] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [users, setUsers] = useState<any[]>([]);
@@ -77,7 +78,7 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
   }, [usersRef, getUsers,])
 
   const editUser = async (userId: string) => {
-    setLoading(true)
+    // setLoading(true)
     try {
       if (changeName.length > 0) {
         await usersRef.child(userId).update({ name: changeName });
@@ -90,19 +91,21 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
             displayName: changeName
           })
         }
-        setLoading(false)
+        // setLoading(false)
         console.log('granted');
+        setPermission('granted')
       } else {
-        setLoading(false)
+        // setLoading(false)
         alert('Please write a name with at least 1 character.')
       }
     } catch (err) {
-      setLoading(false)
+      // setLoading(false)
       console.error(err);
-      alert("PERMISSION_DENIED - You are not allowed to edit other user's profile.")
+      // alert("PERMISSION_DENIED - You are not allowed to edit other user's profile.")
       console.log('denied');
+      setPermission('denied')
     }
-    window.location.reload(false);
+    setTimeout(() => window.location.reload(false), 800);
   }
 
   const displayUsers = (users: any) => {
@@ -118,6 +121,7 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
             <button id={`button${i}`} onClick={() => editUser(user.id)} style={{ margin: 10 }}>
               apply here new name
           </button>
+          {user.id === userId && 'current User'}
           </td>
         </tr>
       )
@@ -136,7 +140,7 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
           await firebase
             .auth()
             .signInWithEmailAndPassword(email, password)
-          setLoading(false)
+          setLoading(false);
           setIsSubmitting(false)
           setEmail('')
           setPassword('')
@@ -145,11 +149,12 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
           getUserRole();
           setEmail('');
           setPassword('');
-
         } catch (err) {
           console.error(err);
+          alert(err.message)
           // set errors
           // set loading to false
+          setLoading(false);
           setIsSubmitting(false)
         }
       } else {
@@ -172,23 +177,25 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
               displayUsers(users);
               getUserRole()
               setLoading(false)
-
               setIsSubmitting(false)
               setEmail('');
               setPassword('');
             } catch (err) {
               console.error("err", err);
+              alert(err.message)
               // set errors
               setLoading(false)
               setIsSubmitting(false)
             }
           }
         } catch (err) {
-          console.error(err);
+          console.error('err', err);
           if (err.code === "auth/email-already-in-use") {
             console.log('Email already in use');
           }
-          setIsSubmitting(false)
+          alert(err.message)
+          setIsSubmitting(false);
+          setLoading(false);
         }
       }
     };
@@ -326,7 +333,9 @@ as in Realtime Database.
           style={{ margin: 10 }}
         />
       </div>}
-      {displayUsers(users)}
+      {permission === 'granted' && <p>PERMISSION_GRANTED</p>}
+      {permission === 'denied' && <p>PERMISSION_DENIED</p>}
+      {!permission && displayUsers(users)}
     </div>);
 }
 
