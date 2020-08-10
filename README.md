@@ -20,14 +20,34 @@ Realtime database rules: https://firebase.google.com/docs/database/security
 
 
 * Current story of end-to-end test:
-    - Sign up 2 new normal users (the admin is already there).
-    - Last user tries to modify the name of all three, but only his own changes. Users sees every time a message, either PERMISSION_GRANTED or PERMISSION_DENIED.
-    - Then we login as admin.
-    - Admin modifies all three names.
-    - Two normal users get deleted.
+    * Sign up 2 new normal users (admin is already there).
+    * Last user tries to modify the name of all three, but only his own changes. User sees every time a message, either PERMISSION_GRANTED or PERMISSION_DENIED, which is a result of firebase rules. 
+    * Then we login as admin.
+    * Admin modifies all three names.
+    * The two normal users login again and delete their accounts, one after the other. Now test is ready to run again.
 
+* Firebase Rules explained:
+    * Read access has every logged in user.
+    * User has write access only if the logged in id is equal to the id of the database, in the 'users' directory.
+    * Further write access is given if the id of the logged in user is equal to the one of the admin.
 
-* Hosting URL: https://fir-rules-f324d.web.app
-* For automation we installed also ts-node.
-* To run test, type: "npm run auto" (see package.json).
-* Note: To run "npm run build" you need to have this: "export {}" at the very top of automation.tsx, so ts will see it as a module. Then run firebase deploy. But, when you run "npm run auto" you need to comment it out, otherwise you get an error "Unespected token..."
+    ```js
+        {
+    "rules": {
+        "users": {
+            ".read": "auth.uid !== null",
+            ".write": "'77BjL7t5IlYiyEECV1cjDG0qEDD2' === auth.uid",
+        "$uid": {
+            ".write": "$uid === auth.uid"
+        }
+        }
+    }
+    }
+    ```
+
+* Notes:
+    * Hosting URL: https://fir-rules-f324d.web.app
+    * For automation we installed also ts-node.
+    * To run test, type: "npm run auto" (see package.json).
+    * To run "npm run build" you need to have this: "export {}" at the very top of automation.tsx, so ts will see it as a module. Then run "firebase deploy". But, when you run "npm run auto" you need to comment it out, otherwise you get an error "Unespected token..."
+    * On the screen user sees two buttons, 'delete user' and 'change admin name back to Admin'. These are just for automation reasons.
