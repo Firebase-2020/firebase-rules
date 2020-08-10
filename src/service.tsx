@@ -38,6 +38,7 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
   }
 
   const saveUser = (createdUser: any) => {
+    console.log('User is saved.');
     return firebase.database().ref("users").child(createdUser.user.uid).set({
       name: createdUser.user.displayName,
       email: createdUser.user.email,
@@ -68,7 +69,7 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
     usersRef.on('value', (snap: any) => {
       loadedUsers.push(snap.val())
       setUsers(loadedUsers)
-      console.log('loadedUsers', loadedUsers);
+      // console.log('loadedUsers', loadedUsers);
     })
   }, [setUsers, usersRef])
 
@@ -83,8 +84,8 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
       if (changeName.length > 0) {
         await usersRef.child(userId).update({ name: changeName });
         // admin cannot change the name in other user's firebase-profile.
-        // Just only in users database, in Realtime Database.
-        // The id is the admin's.
+        // Just only in 'users' directory, in Realtime Database.
+        // The id below is the admin's.
         if ((userRole === 'admin' && userId === '77BjL7t5IlYiyEECV1cjDG0qEDD2') ||
           userRole === 'user') {
           const user: any = firebase.auth().currentUser;
@@ -93,7 +94,7 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
           })
         }
         // setLoading(false)
-        console.log('granted');
+        console.log('Permission Granted');
         setPermission('granted')
       } else {
         // setLoading(false)
@@ -103,7 +104,7 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
       // setLoading(false)
       console.error(err);
       // alert("PERMISSION_DENIED - You are not allowed to edit other user's profile.")
-      console.log('denied');
+      console.log('Permission Denied');
       setPermission('denied')
     }
     setTimeout(() => window.location.reload(false), 800);
@@ -150,6 +151,8 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
           getUserRole();
           setEmail('');
           setPassword('');
+          console.log('User is logged in');
+          
         } catch (err) {
           console.error(err);
           alert(err.message)
@@ -166,14 +169,13 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
             .auth()
             .createUserWithEmailAndPassword(email, password)
           if (createdUser !== null) {
-            console.log('createdUser', createdUser);
+            console.log('User is created:', createdUser);
             try {
               await createdUser.user
                 .updateProfile({
                   displayName: name
                 })
               await saveUser(createdUser);
-              console.log("User saved!");
               getUsers()
               displayUsers(users);
               getUserRole()
@@ -205,19 +207,21 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
 
 
   const logout = async () => {
+    console.log('User is logged out.');
     await firebase.auth().signOut();
     window.location.reload(false)
   }
 
   const deleteUserHandler = () => {
+    console.log('User is deleted.');
     const user: any = firebase.auth().currentUser;
     user.delete();
     firebase.database().ref("users").child(userId).remove();
-    console.log('user deleted');
     window.location.reload(false)
   }
 
   const changeAdminNameHandler = async () => {
+    console.log('Admin name is changed back to Admin.');
     await usersRef.child(userId).update({ name: 'Admin' });
     const user: any = firebase.auth().currentUser;
     user.updateProfile({
@@ -227,7 +231,7 @@ const Service: React.SFC<ServiceProps> = ({ userName, userEmail, userId }) => {
 
   const showInfo = () => {
     alert(`
-* Admin can change every user's name, but only in 'users' database,
+* Admin can change every user's name, but only in 'users' directory,
 in Realtime Database.
 * Admin can change only their own name in Firebase-profile.
 * Users may change only their own name, both in their Firebase-profile,
@@ -243,9 +247,6 @@ as in Realtime Database.
       </div>
     )
   }
-
-
-
 
   return (
     <div className='container' >

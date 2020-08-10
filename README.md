@@ -20,6 +20,7 @@ Realtime database rules: https://firebase.google.com/docs/database/security
 
 
 * Current story of end-to-end test:
+    * Note: When test starts, devtools will also be open. Please select 'console' in order to see the message 'PERMISSION_DENIED' from firebase.
     * Sign up 2 new normal users (admin is already there).
     * Last user tries to modify the name of all three, but only his own changes. User sees every time a message, either PERMISSION_GRANTED or PERMISSION_DENIED, which is a result of firebase rules. 
     * Then we login as admin.
@@ -51,3 +52,4 @@ Realtime database rules: https://firebase.google.com/docs/database/security
     * To run test, type: "npm run auto" (see package.json).
     * To run "npm run build" you need to have this: "export {}" at the very top of automation.tsx, so ts will see it as a module. Then run "firebase deploy". But, when you run "npm run auto" you need to comment it out, otherwise you get an error "Unespected token..."
     * On the screen user sees two buttons, 'delete user' and 'change admin name back to Admin'. These are just for automation reasons.
+    * The password for all users is asdasd.
